@@ -1,60 +1,37 @@
 #!/usr/bin/env bash
 
-check_and_unzip () {
-    if [ $1==".*.gz" ]
-    then
-        TMP_FILE="./tmp.gz"
-        cp $FILE $TMP_FILE 
-        gunzip $TMP_FILE
-        TMP_FILE=${TMP_FILE::-3}
-    else
-        TMP_FILE="./tmp"
-        cp $FILE $TMP_FILE
-    fi
-    echo "$TMP_FILE"
+extract_header() {
+  answer="$(echo "$1" | sed -nE "s/.B #include <([a-zA-Z./\]+\.h)>/\1/p")"
+  if [ -z "$answer" ]
+  then
+    return 1
+  else
+    echo "$answer"
+    return 0
+  fi
 }
+
 
 find_function () {
-   for FILE in $1/*
-    do
-        if [ -d $FILE  ]
-        then
-            continue
-        fi
-        TMP_FILE="$(check_and_unzip $FILE)"
-        LINE="$(grep "\"FILE \*$2" $TMP_FILE | head -1)"
-        if [ ! -z "$LINE" ]
-        then
-            break
-        else
-            rm $TMP_FILE
-        fi
-    done 
-    if [ ! -z "$LINE" ]
+  for dir in $MANPATH
+  do
+    compressed_page="$dir/man3/$1.3.gz"
+    uncompressed_page="$dir/man3/$1.3"
+
+    if [ -f "$uncompressed_page" ]
     then
-        echo "$TMP_FILE"
-    else
-        echo ""
+        extract_header "$(cat $uncompressed_page)" && return 0
+    elif [ -f "$compressed_page" ]
+    then
+        extract_header "$(gunzip -c $compressed_page)" && return 0
     fi
+  done
+
+  return 1
 }
 
-MAN3_PATH="$(find $MANPATH -type d -name "man3" | head -1)"
-
-while read FUNCTION
+IFS=':'
+while read function
 do
-    if [ -z "$FUNCTION" ]
-    then
-        break
-    fi 
-
-    TMP_FILE="$(find_function $MAN3_PATH $FUNCTION)"
-    cat $TMP_FILE
-    if [ -z $TMP_FILE ]
-    then
-        echo "---"
-        continue
-    fi
-    sed -n 's/[^<]*<\([^>]*\).*/\1/p' $TMP_FILE
-
-    rm $TMP_FILE
+    find_function $function || echo "---"
 done
