@@ -7,20 +7,14 @@ main:
   mov x29, sp
   // Allocate local variables
   sub sp, sp, 16
-  add x1, sp, 4
 
 loop:
-  // mov x0, sp
   bl getchar_unlocked
-  //bl putchar_unlocked
-  mov x1, x0
-  //adr x0, FORMAT_STR
-  //bl printf
   cmp w0, -1
   beq end
-  cmp w1, 48
+  cmp w0, 48
   blt loop
-  cmp w1, 57
+  cmp w0, 57
   bgt loop
   bl putchar_unlocked
   b loop
