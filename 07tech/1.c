@@ -53,4 +53,5 @@ int main(int argc, char** argv) {
   }
   struct Item* item_arr = (struct Item*) mem;
   Iterate(item_arr);
+  munmap(mem, statbuf.st_size);
 }

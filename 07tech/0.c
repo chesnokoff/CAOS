@@ -47,4 +47,5 @@ int main(int argc, char** argv) {
     exit(1);
   }
   FindAndPrint(mem, argv[2], statbuf.st_size);
+  munmap(mem, statbuf.st_size);
 }
