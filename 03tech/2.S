@@ -12,9 +12,9 @@ loop:
   bl getchar_unlocked
   cmp w0, -1
   beq end
-  cmp w0, 48
+  cmp w0, '0'
   blt loop
-  cmp w0, 57
+  cmp w0, '9'
   bgt loop
   bl putchar_unlocked
   b loop
