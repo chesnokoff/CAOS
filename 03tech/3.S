@@ -8,7 +8,7 @@ main:
   // Allocate local variables
   sub sp, sp, 16
   mov x0, 0 //nullpointer
-  mov x1, 40 // size to allocate 10 chars
+  mov x1, 40 // size to allocate 10 integers
   bl realloc
   mov x19, x0 // pointer to input string
   mov x20, 0  // char counter
@@ -19,7 +19,6 @@ loop:
   bl getchar_unlocked
   cmp w0, -1
   beq out
-  //bl putchar_unlocked
 
 push:
   cmp x20, x21
@@ -32,7 +31,7 @@ push:
 
 resize:
   mov x22, x0
-  mov x0, x19 // x0 - ponter to array
+  mov x0, x19 // x0 - pointer to array
   mov x8, 2
   mul x21, x21, x8 // capacity *= 2
   mov x1, 4
@@ -64,6 +63,3 @@ end:
   // Exit with return code 0
   mov w0, 0
   ret
-
-.data
-FORMAT_STR: .string "%d"
