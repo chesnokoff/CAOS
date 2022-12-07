@@ -23,8 +23,7 @@ loop:
 push:
   cmp x20, x21
   beq resize
-  mov x8, 4
-  mul x8, x20, x8
+  lsl x8, x20, 2
   str w0, [x19, x8]
   add x20, x20, 1
   b loop
@@ -32,10 +31,8 @@ push:
 resize:
   mov x22, x0
   mov x0, x19 // x0 - pointer to array
-  mov x8, 2
-  mul x21, x21, x8 // capacity *= 2
-  mov x1, 4
-  mul x1, x21, x1 // x1 - new size to allocate
+  lsl x21, x21, 1 // capacity *= 2
+  lsl x1, x21, 2 // x1 - new size to allocate
   bl realloc
   mov x19, x0
   mov x0, x22
@@ -45,16 +42,14 @@ out:
   cmp x20, 0
   beq end
   sub x20, x20, 1
-  mov x8, 4
-  mul x8, x20, x8
+  lsl x8, x20, 2
   ldr w0, [x19, x8]
   bl putchar_unlocked
   b out
 
 end:
   mov x0, x19
-  mov x1, 4
-  mul x1, x1, x21
+  lsl x1, x21, 2
   bl free
   // Free local variables
   mov sp, x29 
