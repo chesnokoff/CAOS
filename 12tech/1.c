@@ -25,11 +25,10 @@ int main(int argc, char** argv) {
   }
   struct sigaction sig_action = {};
   sig_action.sa_handler = process_interceptor;
+  sig_action.sa_flags = SA_RESTART;
   for (size_t pos = SIGRTMIN; pos <=SIGRTMAX; ++pos) {
     sigaction(pos, &sig_action, NULL);
   }
-  // int pid = getpid();
-  // printf("%d, %d\n", pid, SIGRTMIN);
   while (1) {
     if(file_number > 0) {
       char* line = NULL;
@@ -54,5 +53,6 @@ int main(int argc, char** argv) {
   for (size_t pos = 1; pos < argc; ++pos) {
     fclose(files[pos]);
   }
+  free(files);
   return 0;
 }
