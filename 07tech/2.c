@@ -64,7 +64,7 @@ int WriteInSquare(char* text, size_t  x, size_t y, size_t square_size, size_t wi
     perror("Memory allocation error");
     return -1;
   }
-  sprintf(string_value, "%*ld", (int)width, value);
+  snprintf(string_value, width + 1, "%*ld", (int)width, value);
   size_t start = y * square_size * width + y + x * width;
   for (size_t pos = 0; pos < width; ++pos) {
     text[start + pos] = string_value[pos];
