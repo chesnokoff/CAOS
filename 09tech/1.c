@@ -12,7 +12,7 @@ int main() {
   if (nread > 0 && '\n' == expression[nread - 1]) {
     expression[nread - 1] = 0;
   }
-  char* format_string = 
+  char format_string[] = 
 "#include <stdio.h>\n\
 #include <unistd.h>\n\
 \n\
@@ -23,13 +23,13 @@ int main() {\n\
     _exit(1);\n\
   }\n\
 }";
-  char* full_code = malloc((nread + strlen(format_string)) * sizeof(char));
+  char* full_code = malloc((nread + sizeof(format_string)) * sizeof(char));
   if (NULL == full_code) {
     perror("Allocation error");
     free(full_code);
     _exit(1);
   }
-  sprintf(full_code, format_string, expression);
+  snprintf(full_code, nread + sizeof(format_string), format_string, expression);
   int file = open("calculation.c", O_CREAT | O_WRONLY | O_CLOEXEC, 0666);
   if (0 > file) {
     perror("Could not create file");
@@ -86,4 +86,5 @@ int main() {\n\
   remove("calculation");
   remove("calculation.c");
   free(full_code);
+  free(expression);
 }

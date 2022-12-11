@@ -8,7 +8,7 @@ int main() {
     ssize_t nread = getline(&code, &len, stdin);
 
     char* full_code = malloc((nread + 20) * sizeof(char));
-    sprintf(full_code, "print(%s)", code);
+    snprintf(full_code, nread + 20, "print(%s)", code);
 
     execlp("python", "python", "-c", full_code, NULL);
     perror("execlp");
