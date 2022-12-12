@@ -36,24 +36,23 @@ int main(int argc, const char *argv[]) {
     int pipe_fd[2];
     pipe(pipe_fd);
 
-    pid_t pid1 = launch(argv[1], 0, pipe_fd[1]);
+    pid_t pid1 = launch(argv[1], STDIN_FILENO, pipe_fd[1]);
     if (-1 == pid1) {
       perror("launch");
     }
-    int status = 0;
-    waitpid(pid1, &status, 0);
-    if (!(WIFEXITED(status) && WEXITSTATUS(status) == 0)) {
-      _exit(1);
-    }
     close(pipe_fd[1]);
-    pid_t pid2 = launch(argv[2], pipe_fd[0], 1);
+    pid_t pid2 = launch(argv[2], pipe_fd[0], STDOUT_FILENO);
     if (-1 == pid2) {
-    printf("Success\n");
       perror("launch");
     }
-    waitpid(pid2, &status, 0);
+    close(pipe_fd[0]);
+    int status = 0;
+    waitpid(-1, &status, 0);
     if (!(WIFEXITED(status) && WEXITSTATUS(status) == 0)) {
       _exit(1);
     }
-    close(pipe_fd[0]);
+    waitpid(-1, &status, 0);
+    if (!(WIFEXITED(status) && WEXITSTATUS(status) == 0)) {
+      _exit(1);
+    }
 }
